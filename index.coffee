@@ -1,15 +1,15 @@
 request = require 'request'
 cheerio = require 'cheerio'
 #client = require('cheerio-httpcli');
-iconv = require 'iconv'
+iconv = require 'iconv-lite'
 
-module.exports = (id,rid,cmd, fun) ->
-  if ! (id || rid)
-    return null # id か rid のどちらか一方は必須
+module.exports = (id,rid, cmd, fun) ->
+  if ! (id || rid )
+    return null # id か rid のどれかは必須
 
   if rid
     return getbyrid rid,cmd, fun
-  else
+  else if id
     console.log "Obtaining Registration ID from UMIN ID..."
     # UMIN-CTRを検索してridを得る
     request.post({
@@ -23,9 +23,8 @@ module.exports = (id,rid,cmd, fun) ->
       encoding: null },
       (error,response,body) ->
         if  !error && response.statusCode == 200
-          conv = new iconv.Iconv('shift_jis','UTF-8//TRANSLIT//IGNORE');
-          body = conv.convert(body).toString();
-          # console.log body
+          body = iconv.decode body,'Shift_JIS'
+          #console.log body
           $ = cheerio.load body
           match = $("td:contains('閲覧')").children().find('a').attr('href').match(/recptno=(R[0-9]+)/)
           if  ! match
@@ -39,6 +38,7 @@ module.exports = (id,rid,cmd, fun) ->
     return true
 
 getbyrid = (rid, cmd, fun) ->
+    console.log "GetbyRID: " + rid
     request.post({
       url: 'https://upload.umin.ac.jp/cgi-open-bin/ctr/ctr.cgi',
       form:
@@ -50,10 +50,8 @@ getbyrid = (rid, cmd, fun) ->
       encoding: null },
       (error,response,body) ->
         if  !error && response.statusCode == 200
-          conv = new iconv.Iconv('shift_jis','UTF-8//TRANSLIT//IGNORE');
-          body = conv.convert(body).toString();
-          # console.log body
-          body = body.replace(/<=/g, "&lt;=").replace(/>=/g, "&gt;=")
+          body = iconv.decode body,'Shift_JIS'
+          #console.log body
           $ = cheerio.load body
           js = umin2json rid,cmd,$
           fun js
@@ -65,6 +63,7 @@ umin2json = (rid,cmd,$) ->
     title:  $("tr:first-child:contains('基本情報 (Basic information)')").siblings().children("td:first-child:contains('Official scientific title of the study')").siblings(":nth-child(2)").text().replace(/[\r\n\t]/g,"")
     subtitle:  $("tr:first-child:contains('基本情報 (Basic information)')").siblings().children("td:first-child:contains('Title of the study (Brief title)')").siblings(":nth-child(2)").text().replace(/[\r\n\t]/g,"")
     id: $("tr td:first-child:contains('ＵＭＩＮ試験ＩＤ')").siblings("td:nth-child(3)").text().replace(/[\r\n\t]/g,"")
+    URL: $("tr:first-child:contains('閲覧ページへのリンク')").siblings().children("td:first-child:contains('日本語URL')").siblings(":nth-child(2)").text().replace(/[\r\n\t]/g,"")
     rid: rid
     pubdate: $("tr td:first-child:contains('登録日（＝情報公開日）')").siblings("td:nth-child(3)").text().replace(/[\r\n\t]/g,"")
     progress: $("tr td:first-child:contains('試験進捗状況')").siblings("td:nth-child(3)").text().replace(/[\r\n\t]/g,"")
