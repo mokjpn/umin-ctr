@@ -20,7 +20,8 @@ module.exports = (id,rid, cmd, fun) ->
         language: 'J'
         admin:'0'
         intid: id
-      encoding: null },
+      encoding: null,
+      strictSSL: false },
       (error,response,body) ->
         if  !error && response.statusCode == 200
           body = iconv.decode body,'Shift_JIS'
@@ -47,7 +48,8 @@ getbyrid = (rid, cmd, fun) ->
         type: 'summary'
         language:'J'
         recptno: rid
-      encoding: null },
+      encoding: null,
+      strictSSL: false },
       (error,response,body) ->
         if  !error && response.statusCode == 200
           body = iconv.decode body,'Shift_JIS'
