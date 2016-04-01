@@ -39,7 +39,7 @@ module.exports = (id,rid, cmd, fun) ->
 getbyrid = (rid, cmd, fun) ->
     console.log "GetbyRID: " + rid
     request.get({
-      url: 'https://upload.umin.ac.jp/cgi-open-bin/ctr/ctr_view.cgi?recptno=#{rid}'
+      url: "https://upload.umin.ac.jp/cgi-open-bin/ctr/ctr_view.cgi?recptno=#{rid}"
       encoding: null,
       strictSSL: false },
       (error,response,body) ->
