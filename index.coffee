@@ -13,13 +13,11 @@ module.exports = (id,rid, cmd, fun) ->
     console.log "Obtaining Registration ID from UMIN ID..."
     # UMIN-CTRを検索してridを得る
     request.post({
-      url: 'https://upload.umin.ac.jp/cgi-open-bin/ctr/ctr.cgi',
+      url: 'https://upload.umin.ac.jp/cgi-open-bin/ctr/index.cgi',
       form:
-        function: 'search'
-        action: 'list'
-        language: 'J'
-        admin:'0'
-        intid: id
+        sort: '03'
+        function: '04'
+        ids: id
       encoding: null,
       strictSSL: false },
       (error,response,body) ->
@@ -40,14 +38,8 @@ module.exports = (id,rid, cmd, fun) ->
 
 getbyrid = (rid, cmd, fun) ->
     console.log "GetbyRID: " + rid
-    request.post({
-      url: 'https://upload.umin.ac.jp/cgi-open-bin/ctr/ctr.cgi',
-      form:
-        function: 'brows'
-        action: 'brows'
-        type: 'summary'
-        language:'J'
-        recptno: rid
+    request.get({
+      url: 'https://upload.umin.ac.jp/cgi-open-bin/ctr/ctr_view.cgi?recptno=#{rid}'
       encoding: null,
       strictSSL: false },
       (error,response,body) ->
