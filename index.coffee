@@ -24,7 +24,7 @@ module.exports = (id,rid, cmd, fun) ->
       strictSSL: false },
       (error,response,body) ->
         if  !error && response.statusCode == 200
-          body = iconv.decode body,'Shift_JIS'
+          body = iconv.decode body,'UTF-8'
           #console.log body
           $ = cheerio.load body
           match = $("td:contains('閲覧')").children().find('a').attr('href').match(/recptno=(R[0-9]+)/)
@@ -52,7 +52,7 @@ getbyrid = (rid, cmd, fun) ->
       strictSSL: false },
       (error,response,body) ->
         if  !error && response.statusCode == 200
-          body = iconv.decode body,'Shift_JIS'
+          body = iconv.decode body,'UTF-8'
           #console.log body
           $ = cheerio.load body
           js = umin2json rid,cmd,$
