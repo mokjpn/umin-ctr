@@ -25,7 +25,7 @@ module.exports = (id,rid, cmd, fun) ->
           body = iconv.decode body,'UTF-8'
           #console.log body
           $ = cheerio.load body
-          match = $("td:contains('閲覧')").children().find('a').attr('href').match(/recptno=(R[0-9]+)/)
+          match = $("td:contains('閲覧'):not([bgcolor])").find('a').attr('href').match(/recptno=(R[0-9]+)/)
           if  ! match
             return null
           rid = match[1]
