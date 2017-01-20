@@ -9,7 +9,7 @@ UMIN-CTR is located at http://www.umin.ac.jp/ctr/index.htm
 ## Installation
 
 ```
-$ npm install -g mokjpn/umin-ctr
+$ npm install mokjpn/umin-ctr
 ```
 
 ## Usage
@@ -17,5 +17,5 @@ $ npm install -g mokjpn/umin-ctr
 ```
 $ node
 > ctr = require('umin-ctr')
-> ctr('UMIN000001159', rid, function(trial) { console.log JSON.stringify trial });
+> ctr('UMIN000001159', '', function(trial) { console.log(JSON.stringify(trial));});
 ```
