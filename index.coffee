@@ -1,14 +1,13 @@
 request = require 'request'
 cheerio = require 'cheerio'
-#client = require('cheerio-httpcli');
 iconv = require 'iconv-lite'
 
-module.exports = (id,rid, cmd, fun) ->
+module.exports = (id,rid, fun) ->
   if ! (id || rid )
     return null # id か rid のどれかは必須
 
   if rid
-    return getbyrid rid,cmd, fun
+    return getbyrid rid,fun
   else if id
     console.log "Obtaining Registration ID from UMIN ID..."
     # UMIN-CTRを検索してridを得る
@@ -30,13 +29,13 @@ module.exports = (id,rid, cmd, fun) ->
             return null
           rid = match[1]
           #console.log rid
-          return getbyrid rid,cmd, fun
+          return getbyrid rid, fun
         else
           return null
       )
     return true
 
-getbyrid = (rid, cmd, fun) ->
+getbyrid = (rid, fun) ->
     console.log "GetbyRID: " + rid
     request.get({
       url: "https://upload.umin.ac.jp/cgi-open-bin/ctr/ctr_view.cgi?recptno=#{rid}"
@@ -47,12 +46,12 @@ getbyrid = (rid, cmd, fun) ->
           body = iconv.decode body,'UTF-8'
           #console.log body
           $ = cheerio.load body
-          js = umin2json rid,cmd,$
+          js = umin2json rid,$
           fun js
       )
     return true
 
-umin2json = (rid,cmd,$) ->
+umin2json = (rid,$) ->
   trial =
     title:  $("tr:first-child:contains('基本情報/Basic information')").siblings().children("td:first-child:contains('Official scientific title of the study')").siblings(":nth-child(2)").text().replace(/[\r\n\t]/g,"")
     title_en:  $("tr:first-child:contains('基本情報/Basic information')").siblings().children("td:first-child:contains('Official scientific title of the study')").siblings(":nth-child(3)").text().replace(/[\r\n\t]/g,"")
